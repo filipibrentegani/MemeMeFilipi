@@ -16,9 +16,13 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     
+    @IBOutlet weak var topToolbar: UIToolbar!
+    @IBOutlet weak var bottomToolbar: UIToolbar!
+    
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
     
+    @IBOutlet weak var actionButton: UIBarButtonItem!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     
     @IBOutlet weak var cameraButton: UIBarButtonItem!
@@ -40,38 +44,38 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            cameraButton.isEnabled = isCameraAvailable
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                if granted {
-                    self.cameraButton.isEnabled = self.isCameraAvailable
-                }
-            }
-        case .denied:
-            return
-        case .restricted:
-            return
-        }
+//        switch AVCaptureDevice.authorizationStatus(for: .video) {
+//        case .authorized:
+//            cameraButton.isEnabled = isCameraAvailable
+//        case .notDetermined:
+//            AVCaptureDevice.requestAccess(for: .video) { granted in
+//                if granted {
+//                    self.cameraButton.isEnabled = self.isCameraAvailable
+//                }
+//            }
+//        case .denied:
+//            return
+//        case .restricted:
+//            return
+//        }
     }
     
     func save() {
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
-        
-        //TODO share the meme
     }
     
     func generateMemedImage() -> UIImage {
         
-        // TODO: Hide toolbar and navigationbar
-    
+        topToolbar.isHidden = true
+        bottomToolbar.isHidden = true
+        
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        // TODO: Show toolbar and navigationbar
+        topToolbar.isHidden = false
+        bottomToolbar.isHidden = false
         
         return memedImage
     }
@@ -96,6 +100,13 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onActionButton(_ sender: Any) {
+        let activityViewController = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
+        
+        activityViewController.completionWithItemsHandler = {(activityType: UIActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) in
+            self.save()
+        }
+        
+        present(activityViewController, animated: true, completion: nil)
     }
     
     @IBAction func onCancelButton(_ sender: Any) {
@@ -103,6 +114,7 @@ class ViewController: UIViewController {
     }
     
     private func setInitialStateScreen() {
+        actionButton.isEnabled = false
         topTextField.isEnabled = false
         topTextField.text = ""
         bottomTextField.isEnabled = false
@@ -180,6 +192,7 @@ extension ViewController : UIImagePickerControllerDelegate, UINavigationControll
             topTextField.isEnabled = true
             bottomTextField.isEnabled = true
             cancelButton.isEnabled = true
+            actionButton.isEnabled = true
         }
         dismiss(animated:true, completion: nil)
     }

@@ -90,12 +90,15 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="actionButton" destination="sa1-Fs-z7g" id="G1s-rF-PuJ"/>
                         <outlet property="albumButton" destination="6n0-9N-HDD" id="FNh-Gt-SwC"/>
                         <outlet property="bottomTextField" destination="9TV-KK-Ics" id="NDx-E4-8Vd"/>
+                        <outlet property="bottomToolbar" destination="ty1-Rt-SDs" id="QxP-ww-uc5"/>
                         <outlet property="cameraButton" destination="yqU-ju-M8d" id="fcO-IO-ieB"/>
                         <outlet property="cancelButton" destination="afU-fh-BG8" id="Phg-TN-Hhi"/>
                         <outlet property="imageView" destination="ClS-4A-Ef6" id="bY7-Yl-0DR"/>
                         <outlet property="topTextField" destination="PbR-QZ-l43" id="cMm-Pj-w99"/>
+                        <outlet property="topToolbar" destination="igX-X9-BtN" id="cFu-gs-Y43"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
