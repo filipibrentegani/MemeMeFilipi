@@ -12,6 +12,13 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
+    // MARK: Constants
+    
+    private static let topText = "TOP"
+    private static let bottomText = "BOTTOM"
+    
+    // MARK: IBOtlets
+    
     @IBOutlet weak var imageView: UIImageView!
     
     @IBOutlet weak var topToolbar: UIToolbar!
@@ -25,6 +32,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var albumButton: UIBarButtonItem!
+    
+    // MARK: Lifecycle Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +57,13 @@ class ViewController: UIViewController {
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        unsubscribeFromKeyboardNotifications()
+    }
+    
+    // MARK: Private Methods
+    
     private func defineTextFieldStyle(_ textField: UITextField) {
         let memeTextAttributes:[String: Any] = [
             NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
@@ -60,11 +76,11 @@ class ViewController: UIViewController {
         textField.textAlignment = .center
     }
     
-    func save() {
+    private func save() {
         let _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
     }
     
-    func generateMemedImage() -> UIImage {
+    private func generateMemedImage() -> UIImage {
         
         topToolbar.isHidden = true
         bottomToolbar.isHidden = true
@@ -80,23 +96,59 @@ class ViewController: UIViewController {
         return memedImage
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        unsubscribeFromKeyboardNotifications()
+    private func setInitialStateScreen() {
+        actionButton.isEnabled = false
+        topTextField.isEnabled = false
+        topTextField.text = ""
+        bottomTextField.isEnabled = false
+        bottomTextField.text = ""
+        imageView.image = nil
+        cancelButton.isEnabled = false
     }
     
-    @IBAction func onCameraButton(_ sender: Any) {
+    private func subscribeToKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    private func unsubscribeFromKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    private func getKeyboardHeight(_ notification:Notification) -> CGFloat {
+        let userInfo = notification.userInfo
+        let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue
+        return keyboardSize.cgRectValue.height
+    }
+    
+    private func presentUIPickerController(_ sourceType: UIImagePickerController.SourceType) {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
-        pickerController.sourceType = .camera
+        pickerController.sourceType = sourceType
         present(pickerController, animated: true, completion: nil)
+    }
+    
+    @objc private func keyboardWillShow(_ notification:Notification) {
+        if bottomTextField.isFirstResponder {
+            view.frame.origin.y = getKeyboardHeight(notification) * -1
+        }
+    }
+    
+    @objc private func keyboardWillHide(_ notification:Notification) {
+        if bottomTextField.isFirstResponder {
+            view.frame.origin.y = 0
+        }
+    }
+    
+    // MARK: IBActions
+    
+    @IBAction func onCameraButton(_ sender: Any) {
+        presentUIPickerController(.camera)
     }
     
     @IBAction func onAlbumButton(_ sender: Any) {
-        let pickerController = UIImagePickerController()
-        pickerController.delegate = self
-        pickerController.sourceType = .photoLibrary
-        present(pickerController, animated: true, completion: nil)
+        presentUIPickerController(.photoLibrary)
     }
     
     @IBAction func onActionButton(_ sender: Any) {
@@ -112,52 +164,14 @@ class ViewController: UIViewController {
     @IBAction func onCancelButton(_ sender: Any) {
         setInitialStateScreen()
     }
-    
-    private func setInitialStateScreen() {
-        actionButton.isEnabled = false
-        topTextField.isEnabled = false
-        topTextField.text = ""
-        bottomTextField.isEnabled = false
-        bottomTextField.text = ""
-        imageView.image = nil
-        cancelButton.isEnabled = false
-    }
-    
-    func subscribeToKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
-    }
-    
-    func unsubscribeFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
-    }
-    
-    @objc func keyboardWillShow(_ notification:Notification) {
-        if bottomTextField.isFirstResponder {
-            view.frame.origin.y = getKeyboardHeight(notification) * -1
-        }
-    }
-    
-    @objc func keyboardWillHide(_ notification:Notification) {
-        if bottomTextField.isFirstResponder {
-            view.frame.origin.y = 0
-        }
-    }
-    
-    func getKeyboardHeight(_ notification:Notification) -> CGFloat {
-        let userInfo = notification.userInfo
-        let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue
-        return keyboardSize.cgRectValue.height
-    }
 }
 
 extension ViewController : UITextFieldDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         guard let text = textField.text else { return false }
-        if textField == topTextField && text == "TOP" {
+        if textField == topTextField && text == ViewController.topText {
             topTextField.text = ""
-        } else if textField == bottomTextField && text == "BOTTOM" {
+        } else if textField == bottomTextField && text == ViewController.bottomText {
             bottomTextField.text = ""
         }
         return true
@@ -166,9 +180,9 @@ extension ViewController : UITextFieldDelegate {
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         guard let text = textField.text else { return false }
         if textField == topTextField && text == "" {
-            topTextField.text = "TOP"
+            topTextField.text = ViewController.topText
         } else if textField == bottomTextField && text == "" {
-            bottomTextField.text = "BOTTOM"
+            bottomTextField.text = ViewController.bottomText
         }
         return true
     }
@@ -187,8 +201,8 @@ extension ViewController : UIImagePickerControllerDelegate, UINavigationControll
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             imageView.image = image
-            topTextField.text = "TOP"
-            bottomTextField.text = "BOTTOM"
+            topTextField.text = ViewController.topText
+            bottomTextField.text = ViewController.bottomText
             topTextField.isEnabled = true
             bottomTextField.isEnabled = true
             cancelButton.isEnabled = true
