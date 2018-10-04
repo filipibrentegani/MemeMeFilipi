@@ -12,8 +12,6 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
-    private var isCameraAvailable: Bool = UIImagePickerController.isSourceTypeAvailable(.camera)
-    
     @IBOutlet weak var imageView: UIImageView!
     
     @IBOutlet weak var topToolbar: UIToolbar!
@@ -33,6 +31,9 @@ class ViewController: UIViewController {
         
         setInitialStateScreen()
         
+        defineTextFieldStyle(topTextField)
+        defineTextFieldStyle(bottomTextField)
+        
         topTextField.delegate = self
         bottomTextField.delegate = self
     }
@@ -44,24 +45,23 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-//        switch AVCaptureDevice.authorizationStatus(for: .video) {
-//        case .authorized:
-//            cameraButton.isEnabled = isCameraAvailable
-//        case .notDetermined:
-//            AVCaptureDevice.requestAccess(for: .video) { granted in
-//                if granted {
-//                    self.cameraButton.isEnabled = self.isCameraAvailable
-//                }
-//            }
-//        case .denied:
-//            return
-//        case .restricted:
-//            return
-//        }
+        cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
+    
+    private func defineTextFieldStyle(_ textField: UITextField) {
+        let memeTextAttributes:[String: Any] = [
+            NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
+            NSAttributedStringKey.foregroundColor.rawValue: UIColor.white,
+            NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+            NSAttributedStringKey.strokeWidth.rawValue: -5
+        ]
+        
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textAlignment = .center
     }
     
     func save() {
-        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
+        let _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
     }
     
     func generateMemedImage() -> UIImage {
