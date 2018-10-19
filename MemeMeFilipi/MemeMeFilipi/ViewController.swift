@@ -42,9 +42,6 @@ class ViewController: UIViewController {
         
         defineTextFieldStyle(topTextField)
         defineTextFieldStyle(bottomTextField)
-        
-        topTextField.delegate = self
-        bottomTextField.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -74,6 +71,7 @@ class ViewController: UIViewController {
         
         textField.defaultTextAttributes = memeTextAttributes
         textField.textAlignment = .center
+        textField.delegate = self
     }
     
     private func save() {
@@ -82,18 +80,21 @@ class ViewController: UIViewController {
     
     private func generateMemedImage() -> UIImage {
         
-        topToolbar.isHidden = true
-        bottomToolbar.isHidden = true
+        setTopBottonToolbarsIsHidden(true)
         
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        topToolbar.isHidden = false
-        bottomToolbar.isHidden = false
+        setTopBottonToolbarsIsHidden(false)
         
         return memedImage
+    }
+    
+    private func setTopBottonToolbarsIsHidden(_ hide: Bool) {
+        topToolbar.isHidden = false
+        bottomToolbar.isHidden = false
     }
     
     private func setInitialStateScreen() {
@@ -131,7 +132,7 @@ class ViewController: UIViewController {
     
     @objc private func keyboardWillShow(_ notification:Notification) {
         if bottomTextField.isFirstResponder {
-            view.frame.origin.y = getKeyboardHeight(notification) * -1
+            view.frame.origin.y = -getKeyboardHeight(notification)
         }
     }
     
@@ -155,7 +156,9 @@ class ViewController: UIViewController {
         let activityViewController = UIActivityViewController(activityItems: [generateMemedImage()], applicationActivities: nil)
         
         activityViewController.completionWithItemsHandler = {(activityType: UIActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) in
-            self.save()
+            if completed {
+                self.save()
+            }
         }
         
         present(activityViewController, animated: true, completion: nil)
