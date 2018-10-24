@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ClS-4A-Ef6">
-                                <rect key="frame" x="0.0" y="20" width="320" height="460"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="372"/>
                             </imageView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="igX-X9-BtN" userLabel="Top Toolbar">
                                 <rect key="frame" x="0.0" y="20" width="320" height="44"/>
@@ -80,8 +80,8 @@
                             <constraint firstItem="PbR-QZ-l43" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="PlQ-9r-4Gq"/>
                             <constraint firstItem="ty1-Rt-SDs" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="T45-cf-gM1"/>
                             <constraint firstItem="ty1-Rt-SDs" firstAttribute="top" secondItem="9TV-KK-Ics" secondAttribute="bottom" constant="16" id="VEo-ez-Qx4"/>
-                            <constraint firstItem="ClS-4A-Ef6" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="VG6-df-yum"/>
-                            <constraint firstItem="ClS-4A-Ef6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="X6i-rW-5ab"/>
+                            <constraint firstItem="ClS-4A-Ef6" firstAttribute="bottom" secondItem="ty1-Rt-SDs" secondAttribute="top" id="VG6-df-yum"/>
+                            <constraint firstItem="ClS-4A-Ef6" firstAttribute="top" secondItem="igX-X9-BtN" secondAttribute="bottom" id="X6i-rW-5ab"/>
                             <constraint firstItem="igX-X9-BtN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="bN2-F3-hMT"/>
                             <constraint firstItem="ClS-4A-Ef6" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="dFE-UW-Cut"/>
                             <constraint firstItem="igX-X9-BtN" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="kx2-zU-ykU"/>
