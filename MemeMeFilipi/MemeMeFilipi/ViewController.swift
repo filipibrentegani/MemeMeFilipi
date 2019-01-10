@@ -75,7 +75,9 @@ class ViewController: UIViewController {
     }
     
     private func save() {
-        let _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: generateMemedImage())
+        
+        (UIApplication.shared.delegate as! AppDelegate).memes.append(meme)
     }
     
     private func generateMemedImage() -> UIImage {
@@ -93,8 +95,8 @@ class ViewController: UIViewController {
     }
     
     private func setTopBottonToolbarsIsHidden(_ hide: Bool) {
-        topToolbar.isHidden = false
-        bottomToolbar.isHidden = false
+        topToolbar.isHidden = hide
+        bottomToolbar.isHidden = hide
     }
     
     private func setInitialStateScreen() {
@@ -165,7 +167,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onCancelButton(_ sender: Any) {
-        setInitialStateScreen()
+        navigationController?.popViewController(animated: true)
     }
 }
 
